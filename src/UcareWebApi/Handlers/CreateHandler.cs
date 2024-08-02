@@ -1,18 +1,18 @@
 namespace UcareApp.Handlers;
 
 using UcareApp.Commands;
-using UcareApp.Services.Base;
 using MediatR;
 using System.Threading.Tasks;
 using System.Threading;
+using UcareApp.Repositories.Base;
 
 public class CreateHandler : IRequestHandler<CreatePlaceCommand, bool>
 {
-    private readonly IPlaceService placeService;
+    private readonly IPlaceRepository placeRepository;
 
-    public CreateHandler(IPlaceService placeService)
+    public CreateHandler(IPlaceRepository placeRepository)
     {
-        this.placeService = placeService;
+        this.placeRepository = placeRepository;
     }
 
     public async Task<bool> Handle(CreatePlaceCommand request, CancellationToken cancellationToken)
@@ -29,24 +29,38 @@ public class CreateHandler : IRequestHandler<CreatePlaceCommand, bool>
         {
             throw new ArgumentException("Name cannot be less than 1 letter!");
         }
-        if (request.Place.Latitude < -90 || request.Place.Latitude > 90)
+        if (double.TryParse(request.Place.Latitude, out var latitudeValue))
         {
-            throw new ArgumentException("Latitude cannot be less than -90 or more than 90 degrees!");
+            if (latitudeValue < -90 || latitudeValue > 90)
+            {
+                throw new ArgumentException("Latitude cannot be less than -90 or more than 90 degrees!");
+            }
         }
-        if (request.Place.Longitude < -180 || request.Place.Longitude > 180)
+        else
         {
-            throw new ArgumentException("Longitude cannot be less than -180 or more than 180 degrees!");
+            throw new ArgumentException("Latitude cannot non numerical!");
         }
-        if (/*request.Place.WorkingDays.Count() <= 0*/ false)
+        if (double.TryParse(request.Place.Longitude, out var longitudeValue))
+        {
+            if (longitudeValue < -180 || longitudeValue > 180)
+            {
+                throw new ArgumentException("Longitude cannot be less than -180 or more than 180 degrees!");
+            }
+        }
+        else
+        {
+            throw new ArgumentException("Longitude cannot non numerical!");
+        }
+        if (request.Place.WorkingDays.Count() <= 0)
         {
             throw new ArgumentException("Must be at least one working day!");
         }
-        if (/*request.Place.Maintenances.Count() <= 0*/ false)
+        if (request.Place.ServiceType <= Enums.ServiceType.Hair_Salon || request.Place.ServiceType >= Enums.ServiceType.Wellness_and_Day_Spa)
         {
             throw new ArgumentException("Must be at least one type of maintenance!");
         }
 
-        await this.placeService.CreateNewPlaceAsync(request.Place);
+        await this.placeRepository.CreateAsync(request.Place);
 
         return true;
     }

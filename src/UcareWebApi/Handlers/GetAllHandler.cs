@@ -5,19 +5,19 @@ using System.Threading.Tasks;
 using System.Threading;
 using UcareApp.Queries;
 using UcareApp.Models;
-using UcareApp.Services.Base;
+using UcareApp.Repositories.Base;
 
 public class GetAllPlacesHandler : IRequestHandler<GetAllPlacesQuery, IEnumerable<Place>>
 {
-    private readonly IPlaceService placeService;
+    private readonly IPlaceRepository placeRepository;
 
-    public GetAllPlacesHandler(IPlaceService placeService)
+    public GetAllPlacesHandler(IPlaceRepository placeRepository)
     {
-        this.placeService = placeService;
+        this.placeRepository = placeRepository;
     }
 
     public async Task<IEnumerable<Place>> Handle(GetAllPlacesQuery request, CancellationToken cancellationToken)
     {
-        return await this.placeService.GetAllPlacesAsync();
+        return await this.placeRepository.GetAllAsync();
     }
 }

@@ -2,13 +2,17 @@ namespace UcareApp.Repositories;
 
 using UcareApp.Repositories.Base;
 using UcareApp.Models;
-using System.Data.SqlClient;
 using Dapper;
 using Npgsql;
 
 public class PlaceDapperRepository : IPlaceRepository
 {
-    private readonly string connectionString = "Server=ucarepostgresqlsrv.postgres.database.azure.com;Database=postgres;Port=5432;User Id=ucare_admin;Password=Step_password;Ssl Mode=Require;";
+    private readonly string? connectionString;
+    public PlaceDapperRepository(IConfiguration configuration)
+    {
+        this.connectionString = configuration.GetConnectionString("PlacesDb");
+    }
+
     public async Task<IEnumerable<Place>> GetAllAsync()
     {
         using var connection = new NpgsqlConnection(this.connectionString);
@@ -27,7 +31,16 @@ public class PlaceDapperRepository : IPlaceRepository
     {
         using var connection = new NpgsqlConnection(this.connectionString);
 
-        await connection.ExecuteAsync($@"Insert into Places(Name, Adress, Longitude, Latitude) Values ('{newPlace.Name}', '{newPlace.Adress}', {newPlace.Longitude}, {newPlace.Latitude});");
+        await connection.ExecuteAsync($"Insert into Places(Name, Adress, Longitude, Latitude, ServiceType, WorkingDays, PhotoUrl, Rating) Values (@Name, @Adress, @Longitude, @Latitude, @ServiceType, @WorkingDays, @PhotoUrl, @Rating);",
+                                        new { Name = newPlace?.Name,
+                                              Adress = newPlace?.Adress,
+                                              Longitude = newPlace?.Longitude,
+                                              Latitude = newPlace?.Latitude,
+                                              ServiceType = newPlace?.ServiceType,
+                                              WorkingDays = newPlace?.WorkingDays,
+                                              PhotoUrl = newPlace?.PhotoUrl,
+                                              Rating = newPlace?.Rating,
+                                            });
     }
 
     public async Task DeleteAsync(Guid? id)
@@ -53,12 +66,19 @@ public class PlaceDapperRepository : IPlaceRepository
                                                     adress = @Adress,
                                                     longitude = @Longitude,
                                                     latitude = @Latitude,
-                                                    workingDays = ARRAY[]::days[],
-                                                    maintenanceid = null
-                                                Where Places.id = @Id", new { Id = place.Id, 
-                                                                                Name = place.Name, 
-                                                                                Adress = place.Adress, 
-                                                                                Longitude = place.Longitude, 
-                                                                                Latitude = place.Latitude, });
+                                                    workingdays = @WorkingDays,
+                                                    servicetype = @ServiceType,
+                                                    photourl = @PhotoUrl,
+                                                    rating = @Rating
+                                                Where Places.id = @Id", new { Id = place?.Id, 
+                                                                                Name = place?.Name, 
+                                                                                Adress = place?.Adress, 
+                                                                                Longitude = place?.Longitude, 
+                                                                                Latitude = place?.Latitude,
+                                                                                WorkingDays = place?.WorkingDays,
+                                                                                ServiceType = place?.ServiceType,
+                                                                                PhotoUrl = place?.PhotoUrl,
+                                                                                Rating = place?.Rating
+                                                                                 });
     }
 }
