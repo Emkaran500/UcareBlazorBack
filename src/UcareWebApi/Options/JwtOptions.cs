@@ -7,6 +7,7 @@ namespace UcareApp.Options
         public required string Key { get; set; }
         public byte[] KeyInBytes => Encoding.ASCII.GetBytes(Key);
         public required string Issuer { get; set; }
+        public int LifeTimeInHours { get; set; }
         public required string Audience { get; set; }
     }
 }
