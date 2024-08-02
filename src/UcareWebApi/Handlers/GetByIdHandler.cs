@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using System.Threading;
 using UcareApp.Queries;
 using UcareApp.Models;
-using UcareApp.Services.Base;
+using UcareApp.Repositories.Base;
 
 public class GetPlaceByIdHandler : IRequestHandler<GetPlaceByIdQuery, Place>
 {
-    private readonly IPlaceService placeService;
+    private readonly IPlaceRepository placeRepository;
 
-    public GetPlaceByIdHandler(IPlaceService placeService)
+    public GetPlaceByIdHandler(IPlaceRepository placeRepository)
     {
-        this.placeService = placeService;
+        this.placeRepository = placeRepository;
     }
 
     public async Task<Place> Handle(GetPlaceByIdQuery request, CancellationToken cancellationToken)
@@ -23,6 +23,6 @@ public class GetPlaceByIdHandler : IRequestHandler<GetPlaceByIdQuery, Place>
             throw new ArgumentNullException("Id is empty!");
         }
 
-        return await placeService.GetPlaceByIdAsync(request.Id);
+        return await placeRepository.GetByIdAsync(request.Id);
     }
 }

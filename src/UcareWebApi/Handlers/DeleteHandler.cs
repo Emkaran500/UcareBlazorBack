@@ -4,15 +4,15 @@ using UcareApp.Commands;
 using MediatR;
 using System.Threading.Tasks;
 using System.Threading;
-using UcareApp.Services.Base;
+using UcareApp.Repositories.Base;
 
 public class DeleteHandler : IRequestHandler<DeletePlaceCommand, bool>
 {
-    private readonly IPlaceService placeService;
+    private readonly IPlaceRepository placeRepository;
 
-    public DeleteHandler(IPlaceService placeService)
+    public DeleteHandler(IPlaceRepository placeRepository)
     {
-        this.placeService = placeService;
+        this.placeRepository = placeRepository;
     }
 
     public async Task<bool> Handle(DeletePlaceCommand request, CancellationToken cancellationToken)
@@ -22,7 +22,7 @@ public class DeleteHandler : IRequestHandler<DeletePlaceCommand, bool>
             throw new ArgumentNullException("Id is empty!");
         }
 
-        await placeService.DeletePlaceAsync(request.Id);
+        await placeRepository.DeleteAsync(request.Id);
 
         return true;
     }

@@ -9,7 +9,6 @@ namespace UcareApp.Presentation.Controllers;
 
 public class PlaceController : Controller
 {
-
     private readonly IMediator mediator;
     public PlaceController(IMediator mediator)
     {
