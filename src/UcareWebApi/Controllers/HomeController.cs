@@ -1,8 +1,9 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UcareApp.Auth.Models;
 
-namespace UcareApp.Controllers
+namespace UcareApp.Presentation.Controllers
 {
     public class HomeController : Controller
     {

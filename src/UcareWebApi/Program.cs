@@ -12,9 +12,6 @@ using UcareApp.Repositories.Base;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
-
 builder.Services.AddTransient<IPlaceRepository, PlaceDapperRepository>();
 builder.Services.AddMediatR(configuration => {
     configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
@@ -101,21 +98,26 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+
+
+
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
+app.MapControllers();
 
-app.UseRouting();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}");
 
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();
