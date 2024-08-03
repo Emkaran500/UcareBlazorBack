@@ -1,0 +1,6 @@
+@UcareWebApi_HostAddress = http://localhost:5164
+
+GET {{UcareWebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
