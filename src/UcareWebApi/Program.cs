@@ -98,9 +98,6 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-
-
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -110,12 +107,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 app.MapControllers();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}");
 
 app.UseAuthentication();
 app.UseAuthorization();
