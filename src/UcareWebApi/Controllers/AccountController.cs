@@ -5,7 +5,7 @@ using UcareApp.Auth.Models;
 
 namespace UcareApp.Controllers;
 
-public class AccountController : Controller
+public class AccountController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
@@ -17,12 +17,6 @@ public class AccountController : Controller
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
-    }
-
-    [HttpGet]
-    public IActionResult Register()
-    {
-        return View();
     }
 
     [HttpPost]
@@ -43,7 +37,7 @@ public class AccountController : Controller
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Home");
+                return Ok();
             }
 
             foreach (var error in result.Errors)
@@ -52,13 +46,7 @@ public class AccountController : Controller
             }
         }
 
-        return View(dto);
-    }
-
-    [HttpGet]
-    public IActionResult Login()
-    {
-        return View();
+        return Ok(ModelState);
     }
 
     [HttpPost]
@@ -69,19 +57,19 @@ public class AccountController : Controller
             var result = await this._signInManager.PasswordSignInAsync(dto.Email, dto.Password, isPersistent: false, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                return base.Ok();
             }
 
             ModelState.AddModelError("", "Invalid login attempt.");
         }
 
-        return View(dto);
+        return BadRequest(ModelState);
     }
 
     [HttpGet("[controller]/[action]")]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        return RedirectToAction("Index", "Home");
+        return base.NoContent();
     }
 }
