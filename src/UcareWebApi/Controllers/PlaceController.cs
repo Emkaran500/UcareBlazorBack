@@ -7,7 +7,7 @@ using UcareApp.Commands;
 
 namespace UcareApp.Presentation.Controllers;
 
-public class PlaceController : Controller
+public class PlaceController : ControllerBase
 {
     private readonly IMediator mediator;
     public PlaceController(IMediator mediator)
@@ -22,7 +22,7 @@ public class PlaceController : Controller
         var getAllPlacesQuery = new GetAllPlacesQuery();
         var places = await this.mediator.Send(getAllPlacesQuery);
 
-        return View(places);
+        return Ok(places);
     }
 
     [HttpGet("[controller]/[action]")]
@@ -31,14 +31,7 @@ public class PlaceController : Controller
         var getPlaceByIdQuery = new GetPlaceByIdQuery(id);
         var place = await this.mediator.Send(getPlaceByIdQuery);
 
-        return base.View("OnePlace", place);
-    }
-
-    [Authorize(Roles = "admin")]
-    [HttpGet("[action]", Name = "CreatePlace")]
-    public IActionResult Create()
-    {
-        return base.View();
+        return base.Ok(place);
     }
 
     [Authorize(Roles = "admin")]
@@ -50,7 +43,7 @@ public class PlaceController : Controller
 
         if (isCreated)
         {
-            return base.RedirectToAction("Index");
+            return base.Created();
         }
         else
         {
@@ -65,7 +58,7 @@ public class PlaceController : Controller
         var getPlaceByIdQuery = new GetPlaceByIdQuery(id);
         var place = await this.mediator.Send(getPlaceByIdQuery);
 
-        return base.View(place);
+        return base.Ok(place);
     }
 
     [Authorize(Roles = "admin")]
@@ -77,7 +70,7 @@ public class PlaceController : Controller
 
         if (isUpdated)
         {
-            return base.RedirectToAction("index");
+            return base.Ok();
         }
         else
         {
@@ -94,7 +87,7 @@ public class PlaceController : Controller
 
         if (isDeleted)
         {
-            return base.RedirectToAction("index");
+            return base.NoContent();
         }
         else
         {
